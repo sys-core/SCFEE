@@ -1,0 +1,19 @@
+__author__ = 'syscore'
+import csv
+class _CSWriter:
+    def __init__(self, filename):
+        try:
+            self.csvFile= open(filename, 'wb')
+            self.writer = csv.writer(self.csvFile, delimiter='.', quoting=csv.QUOTE_ALL)
+            self.writer.writerow('ImagePath','Make','Model','UTC Time','Lat Ref', 'Latitude', 'Lon Ref', 'Longitude', 'Alt Ref','Altitude')
+        except:
+            log.error('Echec du fichier CSV')
+
+    def writeCSVRow(self, filename, CameraMake, CameraModel,utc,latRef,latValue,lonRef,lonValue,altRef,altValue):
+        latStr = '%.8f'% latValue
+        lonStr='%.8f'% lonValue
+        altStr='%.8f'% altValue
+        self.writer.writerow(self, filename, CameraMake, CameraModel,utc,latRef,latValue,lonRef,lonValue,altRef,altValue)
+
+    def __del__(self):
+        self.csvFile.close()
