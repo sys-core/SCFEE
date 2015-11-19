@@ -1,0 +1,57 @@
+__author__ = 'syscore'
+import os
+import SC_module_EXIF
+import SCGestionnaire_CSV
+import SCAnalyseur_de_commande
+from SCclass_Logging import _ForensicLog
+
+TS = 0
+MAKE = 1
+MODEL = 2
+userArgs = SCAnalyseur_de_commande.ParseCommandLine()
+
+#créer un objet log
+
+logPath = userArgs.logPath+"ForensicLog.txt"
+oLog = _ForensicLog(logPath)
+
+oLog.writeLog("INFO", "Le Scan a Commencé")
+csvPath = userArgs.csvPath+"imageResult.txt"
+oCSV = SCGestionnaire_CSV._CSVWriter(csvPath)
+
+
+# définir le répertoire à scanner
+scanDir = userArgs.scanpath
+try:
+    picts = os.listdir(scanDir)
+except:
+    oLog.writeLog("ERREUR", "Répertoire Invalide",+scanDir)
+    exit(0)
+for aFile in picts:
+    targetFile = scanDir+aFile
+    if os.path.isfile(targetFile):
+
+        gpsDictionary = SC_module_EXIF.ExtractGPSDictionary(targetFile)
+        if (gpsDictionary):
+            dCoor = SC_module_EXIF.ExtractLatLon(gpsDictionary)
+
+            lat = dCoor.get("Lat")
+            latRef = dCoor.get("LatRef")
+            lon = dCoor.get("Lon")
+            lonRef = dCoor.get("LonRef")
+
+            if (lat and lon and latRef and lonRef)
+                print str(lat)+','+str(lon)
+                oCSV.writeCSVRow(targetFile, EXIFList[TS], EXIFList[MAKE], EXIFList[MODEL], latRef, lat, lonRef,lon )
+                oLog.writeLog("INFO", "Données GPS Calculées pour:"+targetFile)
+            else:
+                oLog.writeLog("ALERT", "Pas de Données EXIF GPS pour :"+targetFile)
+        else:
+             oLog.writeLog("ALERT", "Pas de Données EXIF GPS pour :"+targetFile)
+    else:
+         oLog.writeLog("ALERT", targetFile+"un fichier non valide")
+#nettoyer et fermer le fichier Log et CSV
+
+del oLog
+del oCSV
+
