@@ -1,0 +1,20 @@
+__author__ = 'syscore'
+
+import argparse
+import os
+def ParseCommand():
+    parser = argparse.ArgumentParser('Extraxteur gps en Python')
+    parser.add_argument('-v', '--verbal', help="activer l'impression des messages du programme additionnel", action='store_true')
+    parser.add_argument('-l', '--logPath', type = ValidateDirectory, required= True, help="spécifiez le répertoire pour le fichier de sortie du log forensic")
+    parser.add_argument('-c', '--csvPath', type = ValidateDirectory, required= True, help="spécifiez le répertoire pour le fichier de sortie csv")
+    parser.add_argument('-d', '--scanpath', type = ValidateDirectory, required= True, help="spécifiez le répertoire à scanner")
+    theArgs = parser.parse_args()
+    return theArgs
+# La Fin de l'analyseur de ligne de commande
+def ValidateDirectory(theDir):
+    if not os.access(theDir, os.W_OK):
+        return theDir
+    else:
+        raise argparse.ArgumentTypeError('Vous n\'avez pas le droit d\'écrire dans le Répertoire')
+
+#Fin de ValidateDirectory================================================
